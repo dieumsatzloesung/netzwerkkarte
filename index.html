@@ -3,51 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Premium Network | Robust Edition</title>
+    <meta name="referrer" content="no-referrer-when-downgrade">
+    <title>Network | GitHub Edition</title>
     
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet" />
     
     <style>
-        :root {
-            --gold-main: #D4AF37;
-            --gold-bright: #FFD700;
-            --gold-glow: rgba(212, 175, 55, 0.5);
-        }
-
-        body, html { margin: 0; padding: 0; height: 100%; background: #000; font-family: 'Segoe UI', sans-serif; overflow: hidden; }
-        #map { position: absolute; top: 0; bottom: 0; width: 100%; background: #000; }
-
-        .vignette {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, rgba(0,0,0,0) 30%, rgba(0,0,0,0.7) 100%);
-            pointer-events: none; z-index: 2;
-        }
-
+        :root { --gold: #D4AF37; --bright: #FFD700; }
+        body, html { margin: 0; padding: 0; height: 100%; background: #000; overflow: hidden; font-family: sans-serif; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; background: #0b0b0d; }
+        
         .overlay {
-            position: absolute; top: 0; left: 0; z-index: 100;
-            background: rgba(8, 8, 10, 0.95);
-            padding: 25px 35px; border-bottom: 2px solid var(--gold-main); border-right: 2px solid var(--gold-main);
-            box-shadow: 15px 15px 50px rgba(0,0,0,0.9); pointer-events: none;
+            position: absolute; top: 0; left: 0; z-index: 10;
+            background: rgba(10, 10, 12, 0.9);
+            padding: 20px 30px; border-bottom: 2px solid var(--gold); border-right: 2px solid var(--gold);
+            color: white; pointer-events: none;
         }
-        .overlay h1 { margin: 0; font-size: 22px; font-weight: 700; letter-spacing: 4px; text-transform: uppercase; color: var(--gold-main); }
-        .overlay p { margin: 6px 0 0 0; font-size: 13px; color: #fff; opacity: 0.8; letter-spacing: 1.5px; }
+        .overlay h1 { margin: 0; font-size: 20px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); }
+        .overlay p { margin: 5px 0 0; font-size: 12px; opacity: 0.7; letter-spacing: 1px; }
 
-        .hq-container { display: flex; justify-content: center; align-items: center; }
-        .hq-core {
-            width: 20px; height: 20px; background: #fff; border: 3px solid var(--gold-main);
-            border-radius: 50%; z-index: 10; box-shadow: 0 0 25px var(--gold-bright);
-        }
-        .hq-ring {
-            position: absolute; width: 20px; height: 20px; border: 1.5px solid var(--gold-main);
-            border-radius: 50%; animation: hq-ripple 3s infinite cubic-bezier(0.2, 0, 0.2, 1);
-        }
-        @keyframes hq-ripple { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(6); opacity: 0; } }
-
-        .node-glow {
-            width: 10px; height: 10px; background: var(--gold-main); border: 2px solid #fff;
-            border-radius: 50%; box-shadow: 0 0 15px var(--gold-main); cursor: pointer;
-        }
+        .hq-core { width: 18px; height: 18px; background: #fff; border: 3px solid var(--gold); border-radius: 50%; box-shadow: 0 0 20px var(--bright); }
+        .node { width: 10px; height: 10px; background: var(--gold); border: 2px solid #fff; border-radius: 50%; }
     </style>
 </head>
 <body>
@@ -56,123 +33,67 @@
         <h1>Netzwerk</h1>
         <p>International - National - Regional</p>
     </div>
-    <div class="vignette"></div>
     <div id="map"></div>
 
     <script>
+        // Dein Token bleibt unverändert
         mapboxgl.accessToken = 'pk.eyJ1IjoiZGlldW1zYXR6bG9lc3VuZyIsImEiOiJjbW5ieGRoOHQxMGVqMm9wYnJ6MHdndGxzIn0.cjwQqgFatqE_-N-RYO6sbQ';
 
-        const hqCoords = [7.1901, 50.6747]; 
-        const targets = [
-            { name: "Düsseldorf", coords: [6.7735, 51.2277] },
-            { name: "Köln", coords: [6.9583, 50.9375] },
-            { name: "Berlin", coords: [13.4050, 52.5200] },
-            { name: "München", coords: [11.5820, 48.1351] },
-            { name: "Villingen-Schwenningen", coords: [8.4580, 48.0601] },
-            { name: "Utrecht (NL)", coords: [5.1214, 52.0907] },
-            { name: "Rotterdam (NL)", coords: [4.4777, 51.9225] },
-            { name: "Verona (IT)", coords: [10.9916, 45.4384] },
-            { name: "San Marino", coords: [12.4483, 43.9320] },
-            { name: "Novo Gorica (SI)", coords: [13.6464, 45.9550] },
-            { name: "Warschau (PL)", coords: [21.0122, 52.2297] },
-            { name: "Zagreb (HR)", coords: [15.9819, 45.8150] }, 
-            { name: "Tirana (AL)", coords: [19.8187, 41.3275] }  
+        const hq = [7.1901, 50.6747]; 
+        const spots = [
+            { n: "Düsseldorf", c: [6.7735, 51.2277] },
+            { n: "Köln", c: [6.9583, 50.9375] },
+            { n: "Berlin", c: [13.4050, 52.5200] },
+            { n: "München", c: [11.5820, 48.1351] },
+            { n: "Villingen-Schwenningen", c: [8.4580, 48.0601] },
+            { n: "Utrecht (NL)", c: [5.1214, 52.0907] },
+            { n: "Rotterdam (NL)", c: [4.4777, 51.9225] },
+            { n: "Verona (IT)", c: [10.9916, 45.4384] },
+            { n: "San Marino", c: [12.4483, 43.9320] },
+            { n: "Novo Gorica (SI)", c: [13.6464, 45.9550] },
+            { n: "Warschau (PL)", c: [21.0122, 52.2297] },
+            { n: "Zagreb (HR)", c: [15.9819, 45.8150] }, 
+            { n: "Tirana (AL)", c: [19.8187, 41.3275] }
         ];
 
         const map = new mapboxgl.Map({
             container: 'map',
-            style: 'mapbox://styles/mapbox/dark-v11',
-            center: [12, 35], 
-            zoom: 2.5,
-            pitch: 0,
-            antialias: true
+            style: 'mapbox://styles/mapbox/dark-v10',
+            center: [12, 45],
+            zoom: 3.5,
+            renderWorldCopies: false // Verbessert Performance auf Mobilgeräten
         });
 
         map.on('load', () => {
-            // SICHERER WEG: Karte aufhellen über Lichtsteuerung statt Layer-Manipulation
-            map.setLight({
-                anchor: 'viewport',
-                color: '#ffffff',
-                intensity: 0.15
-            });
+            map.flyTo({ center: [11.5, 47.5], zoom: 4.5, speed: 0.5 });
 
-            map.flyTo({ center: [11.5, 47.5], zoom: 4.5, speed: 0.6, curve: 1.2, essential: true });
+            // Basis setzen
+            new mapboxgl.Marker(Object.assign(document.createElement('div'), {className: 'hq-core'})).setLngLat(hq).addTo(map);
 
-            // HQ Marker
-            const hqEl = document.createElement('div');
-            hqEl.className = 'hq-container';
-            hqEl.innerHTML = '<div class="hq-ring"></div><div class="hq-core"></div>';
-            new mapboxgl.Marker(hqEl).setLngLat(hqCoords).addTo(map);
+            spots.forEach((s, i) => {
+                new mapboxgl.Marker(Object.assign(document.createElement('div'), {className: 'node'})).setLngLat(s.c).addTo(map);
 
-            targets.forEach((loc, i) => {
-                const nodeEl = document.createElement('div');
-                nodeEl.className = 'node-glow';
-                new mapboxgl.Marker(nodeEl).setLngLat(loc.coords)
-                    .setPopup(new mapboxgl.Popup({offset: 15}).setHTML(`<strong>${loc.name}</strong>`))
-                    .addTo(map);
+                const id = `s-${i}`;
+                map.addSource(id, { 'type': 'geojson', 'data': { 'type': 'Feature', 'geometry': { 'type': 'LineString', 'coordinates': [hq, s.c] }}});
 
-                const sourceId = `source-${i}`;
-                map.addSource(sourceId, {
-                    'type': 'geojson',
-                    'data': { 'type': 'Feature', 'geometry': { 'type': 'LineString', 'coordinates': [hqCoords, loc.coords] } }
-                });
-
-                // Goldene Basislinie
-                map.addLayer({
-                    'id': `base-${i}`, 'type': 'line', 'source': sourceId,
-                    'paint': { 
-                        'line-color': '#D4AF37', 
-                        'line-width': ['interpolate', ['linear'], ['zoom'], 4, 1.5, 10, 3],
-                        'line-opacity': 0.3 
-                    }
-                });
-
-                // Glow Effekt des Impulses
-                map.addLayer({
-                    'id': `pulse-glow-${i}`, 'type': 'line', 'source': sourceId,
-                    'paint': { 
-                        'line-color': '#FFD700', 
-                        'line-width': ['interpolate', ['linear'], ['zoom'], 4, 5, 10, 12], 
-                        'line-opacity': 0.6, 
-                        'line-blur': 20, 
-                        'line-dasharray': [1, 120] 
-                    }
-                });
-
-                // Weißer Kern des Impulses
-                map.addLayer({
-                    'id': `pulse-core-${i}`, 'type': 'line', 'source': sourceId,
-                    'paint': { 
-                        'line-color': '#FFF', 
-                        'line-width': ['interpolate', ['linear'], ['zoom'], 4, 2.5, 10, 5], 
-                        'line-opacity': 1.0, 
-                        'line-blur': 1, 
-                        'line-dasharray': [1, 120] 
-                    }
-                });
+                map.addLayer({ 'id': `b-${i}`, 'type': 'line', 'source': id, 'paint': { 'line-color': '#D4AF37', 'line-width': 1.5, 'line-opacity': 0.2 }});
+                map.addLayer({ 'id': `g-${i}`, 'type': 'line', 'source': id, 'paint': { 'line-color': '#FFD700', 'line-width': 8, 'line-opacity': 0.5, 'line-blur': 15, 'line-dasharray': [1, 100] }});
+                map.addLayer({ 'id': `c-${i}`, 'type': 'line', 'source': id, 'paint': { 'line-color': '#FFF', 'line-width': 3, 'line-opacity': 1, 'line-dasharray': [1, 100] }});
 
                 let phase = 0;
-                let forward = true; 
-
-                function animate() {
-                    phase = (phase + 0.18); 
-                    if (phase >= 121) { phase = 0; forward = !forward; }
-
-                    if(map.getLayer(`pulse-core-${i}`)) {
-                        let currentPhase = forward ? phase : (121 - phase);
-                        map.setPaintProperty(`pulse-glow-${i}`, 'line-dasharray', [0.01, currentPhase, 15, 121 - currentPhase]);
-                        map.setPaintProperty(`pulse-core-${i}`, 'line-dasharray', [0.01, currentPhase, 10, 121 - currentPhase]);
-                        requestAnimationFrame(animate);
+                let fw = true;
+                function step() {
+                    phase += 0.2;
+                    if (phase >= 110) { phase = 0; fw = !fw; }
+                    if (map.getLayer(`c-${i}`)) {
+                        let cur = fw ? phase : (110 - phase);
+                        map.setPaintProperty(`g-${i}`, 'line-dasharray', [0.01, cur, 15, 110 - cur]);
+                        map.setPaintProperty(`c-${i}`, 'line-dasharray', [0.01, cur, 8, 110 - cur]);
+                        requestAnimationFrame(step);
                     }
                 }
-                animate();
+                step();
             });
-
-            // Ländernamen in Gold (nur wenn der Layer existiert)
-            if (map.getLayer('country-label')) {
-                map.setPaintProperty('country-label', 'text-color', '#D4AF37');
-                map.setPaintProperty('country-label', 'text-opacity', 0.8);
-            }
         });
     </script>
 </body>
