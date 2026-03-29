@@ -78,12 +78,12 @@
             { name: "Novo Gorica (SI)", coords: [13.6464, 45.9550] },
             { name: "Warschau (PL)", coords: [21.0122, 52.2297] },
             { name: "Zagreb (HR)", coords: [15.9819, 45.8150] }, 
-            { name: "Tirana (AL)", coords: [19.8187, 41.3275] }  
+            { name: "Tirana (AL)", coords: [19.8187, 41.3275] },
+            { name: "Murcia (ES)", coords: [-1.1307, 37.9922] }  
         ];
 
         const map = new mapboxgl.Map({
             container: 'map',
-            // Wechsel auf v10 für maximale Kompatibilität bei neuen Tokens
             style: 'mapbox://styles/mapbox/dark-v10',
             center: [12, 35], 
             zoom: 2.5,
@@ -92,7 +92,6 @@
         });
 
         map.on('load', () => {
-            // Karte dezent aufhellen
             map.setLight({
                 anchor: 'viewport',
                 color: '#ffffff',
@@ -101,7 +100,6 @@
 
             map.flyTo({ center: [11.5, 47.5], zoom: 4.5, speed: 0.6, curve: 1.2, essential: true });
 
-            // HQ Marker
             const hqEl = document.createElement('div');
             hqEl.className = 'hq-container';
             hqEl.innerHTML = '<div class="hq-ring"></div><div class="hq-core"></div>';
@@ -120,7 +118,6 @@
                     'data': { 'type': 'Feature', 'geometry': { 'type': 'LineString', 'coordinates': [hqCoords, loc.coords] } }
                 });
 
-                // Goldene Basislinie
                 map.addLayer({
                     'id': `base-${i}`, 'type': 'line', 'source': sourceId,
                     'paint': { 
@@ -130,7 +127,6 @@
                     }
                 });
 
-                // Glow Effekt des Impulses
                 map.addLayer({
                     'id': `pulse-glow-${i}`, 'type': 'line', 'source': sourceId,
                     'paint': { 
@@ -142,7 +138,6 @@
                     }
                 });
 
-                // Weißer Kern des Impulses
                 map.addLayer({
                     'id': `pulse-core-${i}`, 'type': 'line', 'source': sourceId,
                     'paint': { 
@@ -171,7 +166,6 @@
                 animate();
             });
 
-            // Ländernamen in Gold veredeln
             if (map.getLayer('country-label')) {
                 map.setPaintProperty('country-label', 'text-color', '#D4AF37');
                 map.setPaintProperty('country-label', 'text-opacity', 0.8);
